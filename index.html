@@ -4,134 +4,248 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>七人议会</title>
+<title>七人议会 V1.2</title>
 <style>
-* { box-sizing: border-box; }
+:root {
+  --bg:#10141e;
+  --panel:#1b2230;
+  --member:#202938;
+  --border:#394457;
+  --text:#eee;
+  --muted:#a5adbb;
+  --gold:#d9b96e;
+}
+body[data-theme="gold"] {
+  --bg:#14110c;
+  --panel:#241e14;
+  --member:#302719;
+  --border:#59492c;
+  --gold:#e5c47b;
+}
+body[data-theme="white"] {
+  --bg:#f2f4f7;
+  --panel:#fff;
+  --member:#f5f6f8;
+  --border:#cbd2dc;
+  --text:#243044;
+  --muted:#657083;
+  --gold:#96701f;
+}
+* {box-sizing:border-box}
 body {
-  margin: 0;
-  background: #10141e;
-  color: #eee;
-  font-family: Arial, sans-serif;
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:Arial,sans-serif;
 }
 main {
-  max-width: 1000px;
-  margin: auto;
-  padding: 24px;
+  max-width:1100px;
+  margin:auto;
+  padding:20px;
 }
-header {
-  text-align: center;
-  padding: 30px 0;
-}
-h1 {
-  color: #d9b96e;
-  letter-spacing: 12px;
-  font-size: 36px;
-}
-.subtitle {
-  color: #929bad;
-  letter-spacing: 3px;
-}
+header {text-align:center;padding:28px 0}
+h1 {color:var(--gold);letter-spacing:10px;font-size:36px}
+h2 {color:var(--gold);font-size:20px}
+.subtitle {color:var(--muted);letter-spacing:3px}
 .panel {
-  background: #1b2230;
-  border: 1px solid #343e50;
-  border-radius: 14px;
-  padding: 20px;
-  margin-bottom: 20px;
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:20px;
+  margin-bottom:20px;
 }
-h2 { color: #d9b96e; font-size: 20px; }
-input, textarea {
-  width: 100%;
-  padding: 12px;
-  background: #10141e;
-  color: white;
-  border: 1px solid #475166;
-  border-radius: 8px;
-  font: inherit;
-  margin: 8px 0;
+input,textarea,select {
+  width:100%;
+  padding:12px;
+  background:var(--bg);
+  color:var(--text);
+  border:1px solid var(--border);
+  border-radius:8px;
+  font:inherit;
+  margin:8px 0;
 }
-textarea { resize: vertical; }
+textarea {resize:vertical}
 .members {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-  gap: 15px;
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:15px;
 }
 .member {
-  background: #202938;
-  border: 1px solid #394457;
-  border-radius: 12px;
-  padding: 15px;
-  text-align: center;
+  background:var(--member);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:15px;
+  text-align:center;
+  overflow-wrap:anywhere;
 }
-.avatar { font-size: 40px; }
-.name { font-size: 22px; margin: 12px; }
-.desc { color: #a5adbb; font-size: 13px; }
+.member.core {
+  border:2px solid var(--gold);
+}
+.member.locked {
+  border-style:dashed;
+}
+.avatar {font-size:40px}
+.name {font-size:22px;margin:12px}
+.desc {color:var(--muted);font-size:13px}
+.rank {
+  color:var(--gold);
+  font-size:12px;
+  margin:10px 0;
+}
 button {
-  cursor: pointer;
-  padding: 10px 13px;
-  border: 0;
-  border-radius: 7px;
-  background: #353e4e;
-  color: white;
-  font-size: 14px;
-  margin: 3px;
+  cursor:pointer;
+  padding:11px 14px;
+  border:1px solid var(--border);
+  border-radius:8px;
+  background:var(--member);
+  color:var(--text);
+  font-size:14px;
+  margin:4px 2px;
 }
-button:hover { filter: brightness(1.2); }
-button.yes.active { background: #23885b; }
-button.no.active { background: #b93c48; }
-button.abstain.active { background: #64748b; }
-.gold {
-  background: #d9b96e;
-  color: #171717;
-  font-weight: bold;
+button:hover:not(:disabled) {filter:brightness(1.15)}
+button:disabled {opacity:.3;cursor:not-allowed}
+button.yes.active {background:#23885b;color:white}
+button.no.active {background:#b93c48;color:white}
+button.abstain.active {background:#64748b;color:white}
+.primary {
+  background:#d9b96e;
+  color:#171717;
+  font-weight:bold;
 }
+.danger {color:#e05260}
 .summary {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  text-align: center;
-  gap: 8px;
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  text-align:center;
+  gap:8px;
 }
-.number { font-size: 30px; font-weight: bold; }
-.green { color: #4ade80; }
-.red { color: #fb7185; }
+.number {font-size:30px;font-weight:bold}
+.green {color:#2ea86b}
+.red {color:#e05260}
 .bar {
-  display: flex;
-  height: 12px;
-  overflow: hidden;
-  background: #343e50;
-  border-radius: 10px;
-  margin-top: 20px;
+  display:flex;
+  height:12px;
+  overflow:hidden;
+  background:var(--border);
+  border-radius:10px;
+  margin-top:20px;
 }
 #result {
-  text-align: center;
-  color: #d9b96e;
-  font-size: 22px;
-  padding: 15px;
+  text-align:center;
+  color:var(--gold);
+  font-size:22px;
+  padding:15px;
+}
+#phase {
+  text-align:center;
+  border:1px solid var(--gold);
+  border-radius:10px;
+  padding:15px;
+  margin-bottom:18px;
+  line-height:1.8;
 }
 .history {
-  border-bottom: 1px solid #394457;
-  padding: 15px 0;
-  white-space: pre-wrap;
-  overflow-wrap: anywhere;
+  border-bottom:1px solid var(--border);
+  padding:15px 0;
+  overflow-wrap:anywhere;
 }
-.advisor {
-  border-color: #d9b96e;
-  text-align: center;
+.history p {white-space:pre-wrap;line-height:1.6}
+.advisor {border-color:var(--gold);text-align:center}
+.muted {color:var(--muted);font-size:13px}
+.setting-row {
+  display:grid;
+  grid-template-columns:50px 1fr 1.5fr;
+  gap:8px;
+}
+.setting-row input {min-width:0}
+summary {cursor:pointer}
+hr {
+  border:0;
+  border-top:1px solid var(--border);
+  margin:24px 0;
 }
 footer {
-  text-align: center;
-  color: #8791a3;
-  font-size: 12px;
-  padding: 20px;
+  text-align:center;
+  color:var(--muted);
+  font-size:12px;
+  padding:20px;
+}
+#settings summary {
+  color:var(--gold);
+  font-size:20px;
+  font-weight:bold;
 }
 </style>
 </head>
-<body>
+
+<body data-theme="blue">
 <main>
 <header>
   <h1>七人议会</h1>
   <p class="subtitle">THE COUNCIL OF SEVEN</p>
   <p>思考 · 辩论 · 决策</p>
+  <p class="muted">V1.2 · 双核心决策制度版</p>
+  <button onclick="openSettings()">⚙️ 议会管理中心</button>
 </header>
+
+<details class="panel" id="settings">
+  <summary>⚙️ 议会管理中心</summary>
+
+  <h2>👥 议员管理</h2>
+  <p class="muted">依次填写头像、名称、职能。</p>
+  <div id="memberSettings"></div>
+
+  <hr>
+  <h2>📖 议会宪法</h2>
+  <label>决策制度</label>
+  <select id="mode" onchange="showRuleSettings()">
+    <option value="dual">双核心决策制度</option>
+    <option value="normal">普通七人表决制度</option>
+  </select>
+
+  <div id="dualSettings">
+    <label>第一核心议员</label>
+    <select id="coreA"></select>
+    <label>第二核心议员</label>
+    <select id="coreB"></select>
+    <p class="muted">
+      核心一致时直接形成决议。<br>
+      核心分歧时启动五人仲裁，至少三票支持方可通过。<br>
+      核心议员不可弃权。
+    </p>
+  </div>
+
+  <div id="normalSettings">
+    <label>普通制度通过所需支持票数</label>
+    <select id="threshold">
+      <option value="1">1票</option>
+      <option value="2">2票</option>
+      <option value="3">3票</option>
+      <option value="4">4票（简单多数）</option>
+      <option value="5">5票</option>
+      <option value="6">6票</option>
+      <option value="7">7票（一致通过）</option>
+    </select>
+  </div>
+
+  <hr>
+  <h2>🎨 外观设置</h2>
+  <select id="theme">
+    <option value="blue">深夜蓝</option>
+    <option value="gold">暗金色</option>
+    <option value="white">简约白</option>
+  </select>
+
+  <button class="primary" onclick="saveSettings()">保存全部设置</button>
+  <button onclick="restoreSettings()">恢复默认设置</button>
+
+  <hr>
+  <h2>💾 数据管理</h2>
+  <button onclick="exportBackup()">导出全部数据</button>
+  <button onclick="el('importFile').click()">导入备份文件</button>
+  <input type="file" id="importFile" accept=".json,application/json" hidden>
+  <p class="muted">导入将替换当前设备上的议会数据。</p>
+</details>
 
 <section class="panel">
   <h2>📜 当前审议议案</h2>
@@ -143,6 +257,7 @@ footer {
 
 <section class="panel">
   <h2>🏛️ 议员席位</h2>
+  <div id="phase"></div>
   <div class="members" id="members"></div>
 </section>
 
@@ -159,73 +274,406 @@ footer {
 
 <section class="panel">
   <h2>⚖️ 表决统计</h2>
+  <p id="ruleText" class="muted"></p>
   <div class="summary">
     <div><div class="number green" id="yes">0</div>支持</div>
     <div><div class="number red" id="no">0</div>反对</div>
     <div><div class="number" id="abstain">0</div>弃权</div>
-    <div><div class="number" id="pending">7</div>未投票</div>
+    <div><div class="number" id="pending">2</div>待投票</div>
   </div>
   <div class="bar" id="bar"></div>
   <div id="result">等待表决</div>
-  <button class="gold" onclick="saveDecision()">结束表决并归档</button>
+  <button class="primary" id="archiveButton"
+    onclick="saveDecision()">结束表决并归档</button>
 </section>
 
 <section class="panel">
   <h2>📚 历史决议档案</h2>
+  <p id="historyCount" class="muted"></p>
   <div id="history"></div>
-  <button onclick="clearHistory()">清空历史记录</button>
+  <button onclick="exportBackup()">备份历史数据</button>
+  <button class="danger" onclick="clearHistory()">清空历史记录</button>
 </section>
 
 <footer>
-  七人议会决策系统 V1.0<br>
-  所有议案与投票记录仅保存在本地浏览器
+  七人议会决策系统 V1.2<br>
+  双核心决策制度 · 本地数据保存<br>
+  建议定期导出备份文件
 </footer>
 </main>
 
 <script>
-const members = [
-  ["理性", "⚖️", "逻辑与风险审查"],
-  ["感性", "❤️", "情感与幸福"],
-  ["愤怒", "🔥", "底线与原则"],
-  ["色欲", "🌹", "欲望与亲密关系"],
-  ["聪明", "💡", "智慧与道德审视"],
-  ["反向", "🔄", "不同角度的思考"],
-  ["绝望", "🌑", "最坏情况的预判"]
+const el = id => document.getElementById(id);
+const clone = x => JSON.parse(JSON.stringify(x));
+
+const DEFAULT_MEMBERS = [
+  ["理性","⚖️","逻辑与风险审查"],
+  ["感性","❤️","情感与幸福"],
+  ["愤怒","🔥","底线与原则"],
+  ["色欲","🌹","欲望与亲密关系"],
+  ["聪明","💡","智慧与道德审视"],
+  ["反向","🔄","不同角度的思考"],
+  ["绝望","🌑","最坏情况的预判"]
 ];
 
-let votes = Array(7).fill("");
-let speeches = Array(7).fill("");
-let history = [];
+const DEFAULT_SETTINGS = {
+  members:DEFAULT_MEMBERS,
+  threshold:4,
+  theme:"blue",
+  mode:"dual",
+  cores:[0,1]
+};
 
-const el = id => document.getElementById(id);
+const labels = {
+  yes:"支持",
+  no:"反对",
+  abstain:"弃权",
+  "":"未参与表决"
+};
 
-try {
-  history = JSON.parse(localStorage.getItem("councilHistory") || "[]");
-  const draft = JSON.parse(localStorage.getItem("councilDraft") || "null");
-  if (draft) {
-    votes = draft.votes;
-    speeches = draft.speeches;
-    el("proposal").value = draft.proposal;
-    el("description").value = draft.description;
-    el("advice").value = draft.advice;
+const routes = {
+  normal:"普通七人表决",
+  directYes:"核心一致通过",
+  directNo:"核心一致否决",
+  arbitration:"五人仲裁"
+};
+
+function load(key,fallback) {
+  try {
+    const value = localStorage.getItem(key);
+    return value === null ? clone(fallback) : JSON.parse(value);
+  } catch(e) {
+    return clone(fallback);
   }
-} catch (e) {}
+}
+
+function store(key,value) {
+  try {
+    localStorage.setItem(key,JSON.stringify(value));
+    return true;
+  } catch(e) {
+    alert("本地数据保存失败，请检查存储空间。");
+    return false;
+  }
+}
+
+function blankDraft() {
+  return {
+    votes:Array(7).fill(""),
+    speeches:Array(7).fill(""),
+    proposal:"",
+    description:"",
+    advice:""
+  };
+}
+
+function strings(a) {
+  return Array.isArray(a) &&
+    a.every(x=>typeof x==="string");
+}
+
+function validMembers(m) {
+  return Array.isArray(m) && m.length===7 &&
+    m.every(x=>strings(x) && x.length===3 && x[0].trim());
+}
+
+function validThreshold(n) {
+  return Number.isInteger(n) && n>=1 && n<=7;
+}
+
+function validCores(c) {
+  return Array.isArray(c) && c.length===2 &&
+    c.every(i=>Number.isInteger(i) && i>=0 && i<7) &&
+    c[0]!==c[1];
+}
+
+function validSettings(s) {
+  return s && validMembers(s.members) &&
+    validThreshold(s.threshold) &&
+    ["blue","gold","white"].includes(s.theme) &&
+    ["dual","normal"].includes(s.mode) &&
+    validCores(s.cores);
+}
+
+function validVotes(v,empty=true) {
+  return Array.isArray(v) && v.length===7 &&
+    v.every(x=>["yes","no","abstain"].includes(x) ||
+      (empty && x===""));
+}
+
+function validDraft(d) {
+  return d && validVotes(d.votes) &&
+    strings(d.speeches) && d.speeches.length===7 &&
+    strings([d.proposal,d.description,d.advice]);
+}
+
+function validHistory(h) {
+  return Array.isArray(h) && h.every(x=>{
+    if (!x || !validVotes(x.votes) ||
+      !strings(x.speeches) || x.speeches.length!==7 ||
+      !strings([x.title,x.date,x.description,x.advice,x.result])) {
+      return false;
+    }
+
+    if (x.members!==undefined && !validMembers(x.members)) return false;
+    if (x.threshold!==undefined && !validThreshold(x.threshold)) return false;
+
+    if (x.mode==="dual") {
+      if (!validCores(x.cores)) return false;
+      const [a,b] = x.cores;
+      const va=x.votes[a], vb=x.votes[b];
+      if (!["yes","no"].includes(va) ||
+          !["yes","no"].includes(vb)) return false;
+      const others=x.votes.filter((v,i)=>!x.cores.includes(i));
+
+      if (va===vb) {
+        return others.every(v=>v==="") &&
+          x.route===(va==="yes"?"directYes":"directNo");
+      }
+
+      return x.route==="arbitration" && others.every(Boolean);
+    }
+
+    return (x.mode===undefined || x.mode==="normal") &&
+      validVotes(x.votes,false);
+  });
+}
+
+let draft = load("councilDraft",blankDraft());
+if (!validDraft(draft)) draft=blankDraft();
+
+let settings = load("councilSettings",DEFAULT_SETTINGS);
+
+// 兼容 V1.0 和 V1.1
+if (settings && settings.mode===undefined) {
+  settings={
+    ...settings,
+    mode:draft.votes.some(Boolean)?"normal":"dual",
+    cores:[0,1]
+  };
+}
+
+if (!validSettings(settings)) settings=clone(DEFAULT_SETTINGS);
+
+let history=load("councilHistory",[]);
+if (!validHistory(history)) history=[];
+
+let votes=[...draft.votes];
+let speeches=[...draft.speeches];
+
+function currentDraft() {
+  return {
+    votes:[...votes],
+    speeches:[...speeches],
+    proposal:el("proposal").value,
+    description:el("description").value,
+    advice:el("advice").value
+  };
+}
 
 function saveDraft() {
-  localStorage.setItem("councilDraft", JSON.stringify({
-    votes, speeches,
-    proposal: el("proposal").value,
-    description: el("description").value,
-    advice: el("advice").value
-  }));
+  return store("councilDraft",currentDraft());
+}
+
+function isCore(i) {
+  return settings.mode==="dual" &&
+    settings.cores.includes(i);
+}
+
+function coreState() {
+  if (settings.mode==="normal") return "normal";
+
+  const [a,b]=settings.cores;
+  const va=votes[a], vb=votes[b];
+
+  if (!["yes","no"].includes(va) ||
+      !["yes","no"].includes(vb)) return "waiting";
+
+  if (va===vb) {
+    return va==="yes"?"directYes":"directNo";
+  }
+
+  return "arbitration";
+}
+
+function normalizeVotes() {
+  if (settings.mode!=="dual") return;
+
+  settings.cores.forEach(i=>{
+    if (votes[i]==="abstain") votes[i]="";
+  });
+
+  if (coreState()!=="arbitration") {
+    votes=votes.map((v,i)=>isCore(i)?v:"");
+  }
+}
+
+function eligible(i) {
+  return settings.mode==="normal" ||
+    isCore(i) || coreState()==="arbitration";
+}
+
+function tally() {
+  const route=coreState();
+
+  const participants=route==="arbitration"
+    ? votes.filter((v,i)=>!isCore(i))
+    : route==="normal"
+      ? votes
+      : votes.filter((v,i)=>isCore(i));
+
+  const yes=participants.filter(v=>v==="yes").length;
+  const no=participants.filter(v=>v==="no").length;
+  const abstain=participants.filter(v=>v==="abstain").length;
+  const pending=participants.filter(v=>v==="").length;
+
+  let ready=false, passed=false;
+
+  if (route==="normal") {
+    ready=pending===0;
+    passed=ready && yes>=settings.threshold;
+  } else if (route==="directYes" || route==="directNo") {
+    ready=true;
+    passed=route==="directYes";
+  } else if (route==="arbitration") {
+    ready=pending===0;
+    passed=ready && yes>=3;
+  }
+
+  return {
+    route,participants,yes,no,abstain,pending,ready,passed
+  };
+}
+
+function applyDraft(d) {
+  votes=[...d.votes];
+  speeches=[...d.speeches];
+  el("proposal").value=d.proposal;
+  el("description").value=d.description;
+  el("advice").value=d.advice;
+  normalizeVotes();
+  renderMembers();
+}
+
+function openSettings() {
+  el("settings").open=true;
+  el("settings").scrollIntoView({behavior:"smooth"});
+}
+
+function showRuleSettings() {
+  const dual=el("mode").value==="dual";
+  el("dualSettings").hidden=!dual;
+  el("normalSettings").hidden=dual;
+}
+
+function fillCoreOptions() {
+  const a=el("coreA").value || String(settings.cores[0]);
+  const b=el("coreB").value || String(settings.cores[1]);
+
+  ["coreA","coreB"].forEach(id=>{
+    el(id).textContent="";
+    settings.members.forEach((m,i)=>{
+      const o=document.createElement("option");
+      o.value=i;
+      o.textContent=el("name"+i).value || "第"+(i+1)+"席";
+      el(id).appendChild(o);
+    });
+  });
+
+  el("coreA").value=a;
+  el("coreB").value=b;
+}
+
+function renderSettings() {
+  el("memberSettings").innerHTML=settings.members.map((m,i)=>`
+    <div class="setting-row">
+      <input id="emoji${i}" aria-label="头像" maxlength="30">
+      <input id="name${i}" aria-label="名称" maxlength="40"
+        oninput="fillCoreOptions()">
+      <input id="role${i}" aria-label="职能" maxlength="100">
+    </div>
+  `).join("");
+
+  settings.members.forEach((m,i)=>{
+    el("name"+i).value=m[0];
+    el("emoji"+i).value=m[1];
+    el("role"+i).value=m[2];
+  });
+
+  fillCoreOptions();
+
+  el("coreA").value=settings.cores[0];
+  el("coreB").value=settings.cores[1];
+  el("threshold").value=settings.threshold;
+  el("theme").value=settings.theme;
+  el("mode").value=settings.mode;
+
+  document.body.dataset.theme=settings.theme;
+  showRuleSettings();
+}
+
+function commitSettings(next) {
+  if (!validSettings(next)) {
+    return alert("请填写议员名称，并选择两位不同的核心议员。");
+  }
+
+  const changed=
+    next.mode!==settings.mode ||
+    next.threshold!==settings.threshold ||
+    String(next.cores)!==String(settings.cores) ||
+    next.members.some((m,i)=>m[0]!==settings.members[i][0]);
+
+  if (changed && votes.some(Boolean)) {
+    if (!confirm("修改议会规则或议员名称将清除当前投票，但保留发言和历史记录。是否继续？")) {
+      return;
+    }
+  }
+
+  if (!store("councilSettings",next)) return;
+
+  settings=next;
+
+  if (changed) votes=Array(7).fill("");
+
+  renderSettings();
+  renderMembers();
+  saveDraft();
+  alert("议会设置已保存。");
+}
+
+function saveSettings() {
+  const next={
+    members:settings.members.map((m,i)=>[
+      el("name"+i).value.trim(),
+      el("emoji"+i).value.trim() || "👤",
+      el("role"+i).value.trim()
+    ]),
+    threshold:Number(el("threshold").value),
+    theme:el("theme").value,
+    mode:el("mode").value,
+    cores:[Number(el("coreA").value),Number(el("coreB").value)]
+  };
+
+  commitSettings(next);
+}
+
+function restoreSettings() {
+  if (!confirm("恢复默认设置？历史记录不会删除。")) return;
+  commitSettings(clone(DEFAULT_SETTINGS));
 }
 
 function renderMembers() {
-  el("members").innerHTML = members.map((m,i) => `
-    <div class="member">
-      <div class="avatar">${m[1]}</div>
-      <div class="name">${m[0]}</div>
-      <div class="desc">${m[2]}</div>
+  // 双核心制度下，优先显示核心议员
+  const order=settings.mode==="dual"
+    ? [...settings.cores,...[0,1,2,3,4,5,6].filter(i=>!isCore(i))]
+    : [0,1,2,3,4,5,6];
+
+  el("members").innerHTML=order.map(i=>`
+    <div class="member" id="card${i}">
+      <div class="rank" id="rank${i}"></div>
+      <div class="avatar" id="avatar${i}"></div>
+      <div class="name" id="memberName${i}"></div>
+      <div class="desc" id="memberRole${i}"></div>
       <textarea id="speech${i}" rows="3"
         placeholder="议员发言"
         oninput="speeches[${i}]=this.value;saveDraft()"></textarea>
@@ -238,125 +686,316 @@ function renderMembers() {
     </div>
   `).join("");
 
-  speeches.forEach((s,i) => {
-    el("speech"+i).value = s;
+  settings.members.forEach((m,i)=>{
+    el("memberName"+i).textContent=m[0];
+    el("avatar"+i).textContent=m[1];
+    el("memberRole"+i).textContent=m[2];
+    el("speech"+i).value=speeches[i];
   });
+
   update();
 }
 
 function vote(i,v) {
-  votes[i] = votes[i] === v ? "" : v;
+  if (!eligible(i)) return;
+  if (isCore(i) && v==="abstain") return;
+
+  const next=votes[i]===v?"":v;
+
+  if (isCore(i)) {
+    const hasArbitrationVotes=votes.some((x,j)=>!isCore(j)&&x);
+
+    if (hasArbitrationVotes &&
+        !confirm("改变核心立场将清除全部仲裁票，是否继续？")) {
+      return;
+    }
+
+    votes=votes.map((x,j)=>isCore(j)?x:"");
+  }
+
+  votes[i]=next;
+  normalizeVotes();
   update();
   saveDraft();
 }
 
-function count(v) {
-  return votes.filter(x => x === v).length;
-}
-
 function update() {
-  const y = count("yes");
-  const n = count("no");
-  const a = count("abstain");
-  const p = count("");
+  const t=tally();
 
-  el("yes").textContent = y;
-  el("no").textContent = n;
-  el("abstain").textContent = a;
-  el("pending").textContent = p;
+  el("yes").textContent=t.yes;
+  el("no").textContent=t.no;
+  el("abstain").textContent=t.abstain;
+  el("pending").textContent=t.pending;
 
-  members.forEach((m,i) => {
-    ["yes","no","abstain"].forEach(v => {
-      el(v+i).classList.toggle("active", votes[i] === v);
+  const a=settings.members[settings.cores[0]][0];
+  const b=settings.members[settings.cores[1]][0];
+
+  const phaseText={
+    normal:"普通七人表决程序已启动",
+    waiting:"第一阶段：等待 "+a+" 与 "+b+" 表决",
+    directYes:"核心议员达成一致：直接通过",
+    directNo:"核心议员达成一致：直接否决",
+    arbitration:"核心议员出现分歧：五人仲裁程序已启动"
+  };
+
+  el("phase").textContent=phaseText[t.route];
+
+  el("ruleText").textContent=t.route==="normal"
+    ? "普通表决：至少 "+settings.threshold+" 票支持"
+    : t.route==="arbitration"
+      ? "当前仅统计五位仲裁议员的票数，至少三票支持通过"
+      : "当前仅统计两位核心议员的票数";
+
+  settings.members.forEach((m,i)=>{
+    const core=isCore(i);
+    const active=eligible(i);
+
+    el("card"+i).classList.toggle("core",core);
+    el("card"+i).classList.toggle("locked",!active);
+
+    el("rank"+i).textContent=settings.mode==="normal"
+      ? "普通议员"
+      : core
+        ? "👑 核心决策议员"
+        : active
+          ? "🔓 仲裁投票权已激活"
+          : "🔒 投票权锁定 · 可发言";
+
+    ["yes","no","abstain"].forEach(v=>{
+      const button=el(v+i);
+      button.disabled=!active || (core && v==="abstain");
+      button.classList.toggle("active",votes[i]===v);
     });
   });
 
-  el("bar").innerHTML = `
-    <div style="width:${y/7*100}%;background:#23885b"></div>
-    <div style="width:${n/7*100}%;background:#b93c48"></div>
-    <div style="width:${a/7*100}%;background:#8290a5"></div>
+  const total=t.participants.length;
+
+  el("bar").innerHTML=`
+    <div style="width:${t.yes/total*100}%;background:#23885b"></div>
+    <div style="width:${t.no/total*100}%;background:#b93c48"></div>
+    <div style="width:${t.abstain/total*100}%;background:#8290a5"></div>
   `;
 
-  el("result").textContent = p > 0
-    ? "表决进行中"
-    : y >= 4 ? "✓ 议案通过" : "✗ 议案未通过";
+  el("result").textContent=t.ready
+    ? t.passed?"✓ 议案通过":"✗ 议案未通过"
+    : t.route==="waiting"
+      ? "等待核心议员表决"
+      : "表决进行中";
+
+  el("archiveButton").disabled=!t.ready;
 }
 
 function resetCouncil() {
   if (!confirm("开启新议案？当前未归档内容将被清除。")) return;
-  votes = Array(7).fill("");
-  speeches = Array(7).fill("");
-  ["proposal","description","advice"].forEach(id => el(id).value = "");
-  renderMembers();
+  applyDraft(blankDraft());
   saveDraft();
 }
 
 function saveDecision() {
-  const title = el("proposal").value.trim();
+  const d=currentDraft();
+  const t=tally();
+  const title=d.proposal.trim();
+
   if (!title) return alert("请先填写议案名称");
-  if (count("") > 0) return alert("请等待七位议员全部完成投票");
+  if (!t.ready) return alert("表决尚未结束");
 
-  history.unshift({
-    date: new Date().toLocaleString("zh-CN"),
+  const record={
+    date:new Date().toLocaleString("zh-CN"),
     title,
-    description: el("description").value,
-    advice: el("advice").value,
-    votes: [...votes],
-    speeches: [...speeches],
-    result: count("yes") >= 4 ? "议案通过" : "议案未通过"
-  });
+    description:d.description,
+    advice:d.advice,
+    votes:d.votes,
+    speeches:d.speeches,
+    members:clone(settings.members),
+    threshold:settings.threshold,
+    mode:settings.mode,
+    cores:[...settings.cores],
+    route:t.route,
+    result:t.passed?"议案通过":"议案未通过"
+  };
 
-  localStorage.setItem("councilHistory", JSON.stringify(history));
+  const next=[record,...history];
+
+  if (!store("councilHistory",next)) return;
+
+  history=next;
   renderHistory();
-
-  votes = Array(7).fill("");
-  speeches = Array(7).fill("");
-  ["proposal","description","advice"].forEach(id => el(id).value = "");
-  renderMembers();
+  applyDraft(blankDraft());
   saveDraft();
-  alert("决议已成功归档");
+
+  alert("决议已成功归档。\n"+routes[t.route]);
 }
 
 function renderHistory() {
-  const container = el("history");
-  container.textContent = "";
+  const container=el("history");
+  container.textContent="";
+  el("historyCount").textContent="累计历史决议："+history.length+" 份";
 
   if (!history.length) {
-    container.textContent = "暂无历史决议";
+    container.textContent="暂无历史决议";
     return;
   }
 
-  history.forEach(h => {
-    const item = document.createElement("details");
-    item.className = "history";
-    const title = document.createElement("summary");
-    title.textContent = h.title + " — " + h.result;
-    const body = document.createElement("p");
-    const labels = {yes:"支持", no:"反对", abstain:"弃权"};
-    body.textContent =
-      h.date + "\n\n" + h.description + "\n\n" +
-      members.map((m,i) =>
-        m[0] + "：" + labels[h.votes[i]] +
-        "\n" + (h.speeches[i] || "无发言")
-      ).join("\n\n") +
-      "\n\n智识的建议：\n" + (h.advice || "无");
+  history.forEach(h=>{
+    const item=document.createElement("details");
+    item.className="history";
+
+    const title=document.createElement("summary");
+    title.textContent=h.title+" — "+h.result+
+      "【"+(routes[h.route] || "普通七人表决")+"】";
+
+    const body=document.createElement("p");
+    const members=h.members || DEFAULT_MEMBERS;
+    const dual=h.mode==="dual";
+
+    const counted=h.route==="arbitration"
+      ? h.votes.filter((v,i)=>!h.cores.includes(i))
+      : dual
+        ? h.votes.filter((v,i)=>h.cores.includes(i))
+        : h.votes;
+
+    const y=counted.filter(v=>v==="yes").length;
+    const n=counted.filter(v=>v==="no").length;
+    const a=counted.filter(v=>v==="abstain").length;
+
+    let rule="普通表决，至少 "+(h.threshold ?? 4)+" 票支持";
+
+    if (dual) {
+      rule="双核心制度\n核心议员："+
+        h.cores.map(i=>members[i][0]).join("、")+
+        "\n处理方式："+routes[h.route];
+      if (h.route==="arbitration") rule+="\n仲裁通过条件：至少三票支持";
+    }
+
+    body.textContent=
+      h.date+"\n\n"+
+      "适用制度："+rule+"\n\n"+
+      "有效表决："+y+"票支持 / "+n+"票反对 / "+a+"票弃权\n\n"+
+      "议案说明：\n"+(h.description || "无")+"\n\n"+
+      members.map((m,i)=>{
+        const role=dual
+          ? h.cores.includes(i)?"【核心议员】":"【仲裁议员】"
+          : "";
+
+        return m[1]+" "+m[0]+role+"："+labels[h.votes[i]]+
+          "\n"+(h.speeches[i] || "无发言");
+      }).join("\n\n")+
+      "\n\n智识的建议：\n"+(h.advice || "无");
+
     item.append(title,body);
     container.appendChild(item);
   });
 }
 
 function clearHistory() {
-  if (!confirm("确定永久清空所有历史决议？")) return;
-  history = [];
-  localStorage.removeItem("councilHistory");
+  if (!confirm("确定永久清空全部历史决议？建议先导出备份。")) return;
+  if (!store("councilHistory",[])) return;
+  history=[];
   renderHistory();
 }
 
-["proposal","description","advice"].forEach(id => {
+function exportBackup() {
+  const data={
+    app:"seven-council",
+    version:2,
+    exportedAt:new Date().toISOString(),
+    settings:clone(settings),
+    history:clone(history),
+    draft:currentDraft()
+  };
+
+  const blob=new Blob([JSON.stringify(data,null,2)],{
+    type:"application/json"
+  });
+
+  const url=URL.createObjectURL(blob);
+  const link=document.createElement("a");
+
+  link.href=url;
+  link.download="七人议会备份-"+new Date().toISOString().slice(0,10)+".json";
+
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+
+async function importBackup(file) {
+  if (!file) return;
+
+  try {
+    const data=JSON.parse(await file.text());
+
+    if (!data || data.app!=="seven-council" ||
+        ![1,2].includes(data.version)) {
+      throw new Error("不支持的备份文件");
+    }
+
+    // 兼容 V1.1 备份文件
+    if (data.version===1 && data.settings) {
+      data.settings={
+        ...data.settings,
+        mode:"normal",
+        cores:[0,1]
+      };
+    }
+
+    if (!validSettings(data.settings) ||
+        !validHistory(data.history) ||
+        !validDraft(data.draft)) {
+      throw new Error("备份数据格式不正确");
+    }
+
+    if (!confirm("即将恢复 "+data.history.length+
+      " 份历史决议，并覆盖当前设置、草稿和记录。是否继续？")) {
+      return;
+    }
+
+    const keys=["councilSettings","councilHistory","councilDraft"];
+    const previous=keys.map(k=>localStorage.getItem(k));
+    const values=[data.settings,data.history,data.draft];
+
+    try {
+      keys.forEach((k,i)=>{
+        localStorage.setItem(k,JSON.stringify(values[i]));
+      });
+    } catch(e) {
+      keys.forEach((k,i)=>{
+        try {
+          if (previous[i]===null) localStorage.removeItem(k);
+          else localStorage.setItem(k,previous[i]);
+        } catch(err) {}
+      });
+
+      throw new Error("浏览器存储失败");
+    }
+
+    settings=data.settings;
+    history=data.history;
+
+    renderSettings();
+    applyDraft(data.draft);
+    renderHistory();
+    saveDraft();
+
+    alert("议会数据恢复成功！");
+
+  } catch(e) {
+    alert("导入失败："+e.message);
+  }
+}
+
+el("importFile").addEventListener("change",async e=>{
+  await importBackup(e.target.files[0]);
+  e.target.value="";
+});
+
+["proposal","description","advice"].forEach(id=>{
   el(id).addEventListener("input",saveDraft);
 });
 
-renderMembers();
+renderSettings();
+applyDraft(draft);
 renderHistory();
 </script>
 </body>
