@@ -1,0 +1,363 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>七人议会</title>
+<style>
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: #10141e;
+  color: #eee;
+  font-family: Arial, sans-serif;
+}
+main {
+  max-width: 1000px;
+  margin: auto;
+  padding: 24px;
+}
+header {
+  text-align: center;
+  padding: 30px 0;
+}
+h1 {
+  color: #d9b96e;
+  letter-spacing: 12px;
+  font-size: 36px;
+}
+.subtitle {
+  color: #929bad;
+  letter-spacing: 3px;
+}
+.panel {
+  background: #1b2230;
+  border: 1px solid #343e50;
+  border-radius: 14px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+h2 { color: #d9b96e; font-size: 20px; }
+input, textarea {
+  width: 100%;
+  padding: 12px;
+  background: #10141e;
+  color: white;
+  border: 1px solid #475166;
+  border-radius: 8px;
+  font: inherit;
+  margin: 8px 0;
+}
+textarea { resize: vertical; }
+.members {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 15px;
+}
+.member {
+  background: #202938;
+  border: 1px solid #394457;
+  border-radius: 12px;
+  padding: 15px;
+  text-align: center;
+}
+.avatar { font-size: 40px; }
+.name { font-size: 22px; margin: 12px; }
+.desc { color: #a5adbb; font-size: 13px; }
+button {
+  cursor: pointer;
+  padding: 10px 13px;
+  border: 0;
+  border-radius: 7px;
+  background: #353e4e;
+  color: white;
+  font-size: 14px;
+  margin: 3px;
+}
+button:hover { filter: brightness(1.2); }
+button.yes.active { background: #23885b; }
+button.no.active { background: #b93c48; }
+button.abstain.active { background: #64748b; }
+.gold {
+  background: #d9b96e;
+  color: #171717;
+  font-weight: bold;
+}
+.summary {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  text-align: center;
+  gap: 8px;
+}
+.number { font-size: 30px; font-weight: bold; }
+.green { color: #4ade80; }
+.red { color: #fb7185; }
+.bar {
+  display: flex;
+  height: 12px;
+  overflow: hidden;
+  background: #343e50;
+  border-radius: 10px;
+  margin-top: 20px;
+}
+#result {
+  text-align: center;
+  color: #d9b96e;
+  font-size: 22px;
+  padding: 15px;
+}
+.history {
+  border-bottom: 1px solid #394457;
+  padding: 15px 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.advisor {
+  border-color: #d9b96e;
+  text-align: center;
+}
+footer {
+  text-align: center;
+  color: #8791a3;
+  font-size: 12px;
+  padding: 20px;
+}
+</style>
+</head>
+<body>
+<main>
+<header>
+  <h1>七人议会</h1>
+  <p class="subtitle">THE COUNCIL OF SEVEN</p>
+  <p>思考 · 辩论 · 决策</p>
+</header>
+
+<section class="panel">
+  <h2>📜 当前审议议案</h2>
+  <input id="proposal" placeholder="请输入议案名称">
+  <textarea id="description" rows="3"
+    placeholder="议案背景与详细说明"></textarea>
+  <button onclick="resetCouncil()">开启新议案</button>
+</section>
+
+<section class="panel">
+  <h2>🏛️ 议员席位</h2>
+  <div class="members" id="members"></div>
+</section>
+
+<section class="panel advisor">
+  <div class="avatar">✦</div>
+  <h2>智识 · ChatGPT</h2>
+  <p>第八人 · 外部顾问 · 无投票权</p>
+  <textarea id="advice" rows="4"
+    placeholder="在此记录智识提供的分析与建议"></textarea>
+  <button onclick="window.open('https://chatgpt.com/','_blank','noopener,noreferrer')">
+    咨询智识
+  </button>
+</section>
+
+<section class="panel">
+  <h2>⚖️ 表决统计</h2>
+  <div class="summary">
+    <div><div class="number green" id="yes">0</div>支持</div>
+    <div><div class="number red" id="no">0</div>反对</div>
+    <div><div class="number" id="abstain">0</div>弃权</div>
+    <div><div class="number" id="pending">7</div>未投票</div>
+  </div>
+  <div class="bar" id="bar"></div>
+  <div id="result">等待表决</div>
+  <button class="gold" onclick="saveDecision()">结束表决并归档</button>
+</section>
+
+<section class="panel">
+  <h2>📚 历史决议档案</h2>
+  <div id="history"></div>
+  <button onclick="clearHistory()">清空历史记录</button>
+</section>
+
+<footer>
+  七人议会决策系统 V1.0<br>
+  所有议案与投票记录仅保存在本地浏览器
+</footer>
+</main>
+
+<script>
+const members = [
+  ["理性", "⚖️", "逻辑与风险审查"],
+  ["感性", "❤️", "情感与幸福"],
+  ["愤怒", "🔥", "底线与原则"],
+  ["色欲", "🌹", "欲望与亲密关系"],
+  ["聪明", "💡", "智慧与道德审视"],
+  ["反向", "🔄", "不同角度的思考"],
+  ["绝望", "🌑", "最坏情况的预判"]
+];
+
+let votes = Array(7).fill("");
+let speeches = Array(7).fill("");
+let history = [];
+
+const el = id => document.getElementById(id);
+
+try {
+  history = JSON.parse(localStorage.getItem("councilHistory") || "[]");
+  const draft = JSON.parse(localStorage.getItem("councilDraft") || "null");
+  if (draft) {
+    votes = draft.votes;
+    speeches = draft.speeches;
+    el("proposal").value = draft.proposal;
+    el("description").value = draft.description;
+    el("advice").value = draft.advice;
+  }
+} catch (e) {}
+
+function saveDraft() {
+  localStorage.setItem("councilDraft", JSON.stringify({
+    votes, speeches,
+    proposal: el("proposal").value,
+    description: el("description").value,
+    advice: el("advice").value
+  }));
+}
+
+function renderMembers() {
+  el("members").innerHTML = members.map((m,i) => `
+    <div class="member">
+      <div class="avatar">${m[1]}</div>
+      <div class="name">${m[0]}</div>
+      <div class="desc">${m[2]}</div>
+      <textarea id="speech${i}" rows="3"
+        placeholder="议员发言"
+        oninput="speeches[${i}]=this.value;saveDraft()"></textarea>
+      <button class="yes" id="yes${i}"
+        onclick="vote(${i},'yes')">支持</button>
+      <button class="no" id="no${i}"
+        onclick="vote(${i},'no')">反对</button>
+      <button class="abstain" id="abstain${i}"
+        onclick="vote(${i},'abstain')">弃权</button>
+    </div>
+  `).join("");
+
+  speeches.forEach((s,i) => {
+    el("speech"+i).value = s;
+  });
+  update();
+}
+
+function vote(i,v) {
+  votes[i] = votes[i] === v ? "" : v;
+  update();
+  saveDraft();
+}
+
+function count(v) {
+  return votes.filter(x => x === v).length;
+}
+
+function update() {
+  const y = count("yes");
+  const n = count("no");
+  const a = count("abstain");
+  const p = count("");
+
+  el("yes").textContent = y;
+  el("no").textContent = n;
+  el("abstain").textContent = a;
+  el("pending").textContent = p;
+
+  members.forEach((m,i) => {
+    ["yes","no","abstain"].forEach(v => {
+      el(v+i).classList.toggle("active", votes[i] === v);
+    });
+  });
+
+  el("bar").innerHTML = `
+    <div style="width:${y/7*100}%;background:#23885b"></div>
+    <div style="width:${n/7*100}%;background:#b93c48"></div>
+    <div style="width:${a/7*100}%;background:#8290a5"></div>
+  `;
+
+  el("result").textContent = p > 0
+    ? "表决进行中"
+    : y >= 4 ? "✓ 议案通过" : "✗ 议案未通过";
+}
+
+function resetCouncil() {
+  if (!confirm("开启新议案？当前未归档内容将被清除。")) return;
+  votes = Array(7).fill("");
+  speeches = Array(7).fill("");
+  ["proposal","description","advice"].forEach(id => el(id).value = "");
+  renderMembers();
+  saveDraft();
+}
+
+function saveDecision() {
+  const title = el("proposal").value.trim();
+  if (!title) return alert("请先填写议案名称");
+  if (count("") > 0) return alert("请等待七位议员全部完成投票");
+
+  history.unshift({
+    date: new Date().toLocaleString("zh-CN"),
+    title,
+    description: el("description").value,
+    advice: el("advice").value,
+    votes: [...votes],
+    speeches: [...speeches],
+    result: count("yes") >= 4 ? "议案通过" : "议案未通过"
+  });
+
+  localStorage.setItem("councilHistory", JSON.stringify(history));
+  renderHistory();
+
+  votes = Array(7).fill("");
+  speeches = Array(7).fill("");
+  ["proposal","description","advice"].forEach(id => el(id).value = "");
+  renderMembers();
+  saveDraft();
+  alert("决议已成功归档");
+}
+
+function renderHistory() {
+  const container = el("history");
+  container.textContent = "";
+
+  if (!history.length) {
+    container.textContent = "暂无历史决议";
+    return;
+  }
+
+  history.forEach(h => {
+    const item = document.createElement("details");
+    item.className = "history";
+    const title = document.createElement("summary");
+    title.textContent = h.title + " — " + h.result;
+    const body = document.createElement("p");
+    const labels = {yes:"支持", no:"反对", abstain:"弃权"};
+    body.textContent =
+      h.date + "\n\n" + h.description + "\n\n" +
+      members.map((m,i) =>
+        m[0] + "：" + labels[h.votes[i]] +
+        "\n" + (h.speeches[i] || "无发言")
+      ).join("\n\n") +
+      "\n\n智识的建议：\n" + (h.advice || "无");
+    item.append(title,body);
+    container.appendChild(item);
+  });
+}
+
+function clearHistory() {
+  if (!confirm("确定永久清空所有历史决议？")) return;
+  history = [];
+  localStorage.removeItem("councilHistory");
+  renderHistory();
+}
+
+["proposal","description","advice"].forEach(id => {
+  el(id).addEventListener("input",saveDraft);
+});
+
+renderMembers();
+renderHistory();
+</script>
+</body>
+</html>
